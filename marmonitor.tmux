@@ -62,7 +62,7 @@ fi
 
 # ─── Set statusline ──────────────────────────────────────────────────
 
-statusline_cmd="#[bg=#1e1e2e]#[fg=#cdd6f4]  #($CURRENT_DIR/scripts/statusline.sh '${format}') "
+statusline_cmd="#[bg=#1e1e2e]#[fg=#cdd6f4]#($CURRENT_DIR/scripts/statusline.sh '${format}') "
 
 # Check if this status-format line is already set by us (avoid duplicates on reload)
 current_format=$(tmux show-option -gqv "status-format[${status_line}]" 2>/dev/null)
