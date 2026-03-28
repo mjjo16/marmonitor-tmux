@@ -62,7 +62,7 @@ fi
 
 # ─── Set statusline ──────────────────────────────────────────────────
 
-statusline_cmd="#($CURRENT_DIR/scripts/statusline.sh '${format}')"
+statusline_cmd="#[bg=#1e1e2e]#[fg=#cdd6f4]  #($CURRENT_DIR/scripts/statusline.sh '${format}') "
 
 # Check if this status-format line is already set by us (avoid duplicates on reload)
 current_format=$(tmux show-option -gqv "status-format[${status_line}]" 2>/dev/null)
@@ -76,19 +76,19 @@ tmux set -g status-interval "$status_interval"
 # ─── Key bindings ─────────────────────────────────────────────────────
 
 # Attention popup (prefix + key)
-tmux bind "$attention_key" display-popup -E -w 80 -h 20 "marmonitor attention --interactive"
+tmux bind-key "$attention_key" display-popup -E -w 120 -h 32 "marmonitor attention --interactive --limit 12"
 
 # Jump popup (prefix + key)
-tmux bind "$jump_key" display-popup -E -w 60 -h 15 "marmonitor jump --attention"
+tmux bind-key "$jump_key" display-popup -E -w 120 -h 32 "marmonitor jump --attention"
 
 # Dock toggle (prefix + key)
-tmux bind "$dock_key" split-window -v -l 12 "marmonitor dock"
+tmux bind-key "$dock_key" run-shell "$CURRENT_DIR/scripts/toggle-dock.sh"
 
 # Direct jump by number (Option+1~5)
 if [ "$direct_jump" = "on" ]; then
-  tmux bind -n M-1 run-shell "marmonitor jump --attention-index 1"
-  tmux bind -n M-2 run-shell "marmonitor jump --attention-index 2"
-  tmux bind -n M-3 run-shell "marmonitor jump --attention-index 3"
-  tmux bind -n M-4 run-shell "marmonitor jump --attention-index 4"
-  tmux bind -n M-5 run-shell "marmonitor jump --attention-index 5"
+  tmux bind-key -n M-1 run-shell -b "marmonitor jump --attention-index 1 >/dev/null 2>&1"
+  tmux bind-key -n M-2 run-shell -b "marmonitor jump --attention-index 2 >/dev/null 2>&1"
+  tmux bind-key -n M-3 run-shell -b "marmonitor jump --attention-index 3 >/dev/null 2>&1"
+  tmux bind-key -n M-4 run-shell -b "marmonitor jump --attention-index 4 >/dev/null 2>&1"
+  tmux bind-key -n M-5 run-shell -b "marmonitor jump --attention-index 5 >/dev/null 2>&1"
 fi
