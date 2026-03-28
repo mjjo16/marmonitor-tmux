@@ -67,20 +67,33 @@ set -g @marmonitor-direct-jump 'on'
 set -g @marmonitor-interval '5'
 ```
 
-## Compatibility
+## Uninstall
 
-- Works with default tmux config
-- Works alongside catppuccin, powerline, and other themes (uses a separate status line)
-- If your tmux already uses multi-line status, marmonitor appends to the next available line
-- `marmonitor` must be in PATH (`npm install -g marmonitor`)
+This plugin sets `status-format`, `status-interval`, and key bindings when loaded. To fully clean up after removing:
 
-## Troubleshooting
+```bash
+# 1. Remove the @plugin line from ~/.tmux.conf
+# 2. Run cleanup from marmonitor CLI (recommended)
+marmonitor uninstall-integration
 
-**"marmonitor not found"** — Run `npm install -g marmonitor` first.
+# 3. Or manually reset in tmux:
+tmux set -g status on
+tmux set -gu 'status-format[1]'
+```
 
-**Status bar not showing** — Check `marmonitor --statusline --statusline-format tmux-badges` works in your terminal.
+> **Note**: tpm's `prefix + alt + u` removes the plugin directory but does not automatically undo tmux settings. Use the steps above for a clean removal.
 
-**Conflicts with existing status lines** — Set `@marmonitor-status-line` to a different line number.
+## Known Limitations
+
+- **Key binding conflicts**: Default bindings (`a`, `j`, `m`, `M-1~5`) may conflict with your existing bindings. Use the `@marmonitor-*-key` options to change them.
+- **status-interval**: This plugin sets `status-interval` globally. If you have a custom value, set `@marmonitor-interval` to match.
+- **status line**: By default uses line index 1 (second line). If your config already uses multi-line status, set `@marmonitor-status-line` to avoid conflicts.
+
+## Related
+
+- [marmonitor](https://github.com/mjjo16/marmonitor) — the CLI tool (required)
+- `marmonitor setup tmux` — alternative setup without tpm
+- `marmonitor uninstall-integration` — clean removal of tmux settings
 
 ## License
 
