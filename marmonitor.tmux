@@ -38,7 +38,7 @@ attention_key=$(get_opt "@marmonitor-attention-key" "a")
 jump_key=$(get_opt "@marmonitor-jump-key" "j")
 dock_key=$(get_opt "@marmonitor-dock-key" "m")
 direct_jump=$(get_opt "@marmonitor-direct-jump" "on")
-status_interval=$(get_opt "@marmonitor-interval" "5")
+status_interval=$(get_opt "@marmonitor-interval" "2")
 
 # ─── Detect existing status configuration ────────────────────────────
 
