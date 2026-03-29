@@ -75,20 +75,37 @@ tmux set -g status-interval "$status_interval"
 
 # ─── Key bindings ─────────────────────────────────────────────────────
 
+# Conflict check helper: warn if key is already bound (but still bind)
+check_key_conflict() {
+  local key="$1"
+  local table="${2:-prefix}"
+  local existing
+  if [ "$table" = "root" ]; then
+    existing=$(tmux list-keys -T root 2>/dev/null | grep " $key " | head -1)
+  else
+    existing=$(tmux list-keys -T prefix 2>/dev/null | grep " $key " | head -1)
+  fi
+  if [ -n "$existing" ]; then
+    tmux display-message "marmonitor: key '$key' overrides existing binding. Set @marmonitor-*-key to change." 2>/dev/null
+  fi
+}
+
 # Attention popup (prefix + key)
+check_key_conflict "$attention_key" prefix
 tmux bind-key "$attention_key" display-popup -E -w 120 -h 32 "marmonitor attention --interactive --limit 12"
 
 # Jump popup (prefix + key)
+check_key_conflict "$jump_key" prefix
 tmux bind-key "$jump_key" display-popup -E -w 120 -h 32 "marmonitor jump --attention"
 
 # Dock toggle (prefix + key)
+check_key_conflict "$dock_key" prefix
 tmux bind-key "$dock_key" run-shell "$CURRENT_DIR/scripts/toggle-dock.sh"
 
 # Direct jump by number (Option+1~5)
 if [ "$direct_jump" = "on" ]; then
-  tmux bind-key -n M-1 run-shell -b "marmonitor jump --attention-index 1 >/dev/null 2>&1"
-  tmux bind-key -n M-2 run-shell -b "marmonitor jump --attention-index 2 >/dev/null 2>&1"
-  tmux bind-key -n M-3 run-shell -b "marmonitor jump --attention-index 3 >/dev/null 2>&1"
-  tmux bind-key -n M-4 run-shell -b "marmonitor jump --attention-index 4 >/dev/null 2>&1"
-  tmux bind-key -n M-5 run-shell -b "marmonitor jump --attention-index 5 >/dev/null 2>&1"
+  for i in 1 2 3 4 5; do
+    check_key_conflict "M-$i" root
+    tmux bind-key -n "M-$i" run-shell -b "marmonitor jump --attention-index $i >/dev/null 2>&1"
+  done
 fi
