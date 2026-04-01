@@ -20,6 +20,12 @@ set -g @plugin 'mjjo16/marmonitor-tmux'
 
 Reload TPM with `prefix + I`.
 
+After updating the plugin with `prefix + U`, re-apply it in the running tmux server if click actions or popup keybindings still look stale:
+
+```bash
+tmux run-shell ~/.tmux/plugins/marmonitor-tmux/marmonitor.tmux
+```
+
 ## What It Configures
 
 - tmux multi-line status when needed
@@ -55,6 +61,10 @@ set -g @marmonitor-interval '5'
 
 `marmonitor not found`:
 - Install the main CLI first with `npm install -g marmonitor`.
+
+`prefix + j` or statusline click still uses the old behavior after `prefix + U`:
+- The plugin files were updated, but the running tmux server is still holding the old bindings in memory.
+- Run `tmux run-shell ~/.tmux/plugins/marmonitor-tmux/marmonitor.tmux` to re-apply the plugin without restarting tmux.
 
 ## License
 
