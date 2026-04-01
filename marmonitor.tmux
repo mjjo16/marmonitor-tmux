@@ -89,6 +89,10 @@ fi
 # Set refresh interval
 tmux set -g status-interval "$status_interval"
 
+# Click attention pills / jump-back in statusline
+tmux unbind-key -n MouseDown1Status 2>/dev/null || true
+tmux bind-key -n MouseDown1Status run-shell -b "sh -lc '$MARMONITOR_CMD status-click \"#{mouse_status_range}\" --client-tty \"#{client_tty}\" >/dev/null 2>&1'"
+
 # ─── Key bindings ─────────────────────────────────────────────────────
 
 # Conflict check helper: warn if key is already bound (but still bind)
@@ -108,11 +112,11 @@ check_key_conflict() {
 
 # Attention popup (prefix + key)
 check_key_conflict "$attention_key" prefix
-tmux bind-key "$attention_key" display-popup -E -w 120 -h 32 "sh -lc '$MARMONITOR_CMD attention --interactive --limit 12'"
+tmux bind-key "$attention_key" display-popup -E -w 120 -h 42 "sh -lc '$MARMONITOR_CMD attention --interactive --limit 12'"
 
 # Jump popup (prefix + key)
 check_key_conflict "$jump_key" prefix
-tmux bind-key "$jump_key" display-popup -E -w 120 -h 32 "sh -lc '$MARMONITOR_CMD jump --attention'"
+tmux bind-key "$jump_key" display-popup -E -w 120 -h 42 "sh -lc '$MARMONITOR_CMD jump --attention'"
 
 # Dock toggle (prefix + key)
 check_key_conflict "$dock_key" prefix
@@ -124,4 +128,8 @@ if [ "$direct_jump" = "on" ]; then
     check_key_conflict "M-$i" root
     tmux bind-key -n "M-$i" run-shell -b "sh -lc '$MARMONITOR_CMD jump --attention-index $i >/dev/null 2>&1'"
   done
+
+  # Jump-back (Option+6)
+  check_key_conflict "M-6" root
+  tmux bind-key -n "M-6" run-shell -b "sh -lc '$MARMONITOR_CMD jump-back >/dev/null 2>&1'"
 fi
