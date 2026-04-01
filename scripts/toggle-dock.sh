@@ -2,7 +2,8 @@
 set -euo pipefail
 
 DOCK_TITLE="marmonitor-dock"
-DOCK_CMD="marmonitor dock --lines 12"
+MARMONITOR_CMD="${1:-marmonitor}"
+DOCK_CMD="sh -lc '$MARMONITOR_CMD dock --lines 12'"
 
 existing_pane="$(
   tmux list-panes -F '#{pane_id} #{pane_title}' 2>/dev/null | awk -v title="${DOCK_TITLE}" '$2 == title { print $1; exit }'
