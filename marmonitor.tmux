@@ -51,7 +51,6 @@ fi
 format=$(get_opt "@marmonitor-format" "tmux-badges")
 status_line=$(get_opt "@marmonitor-status-line" "1")
 attention_key=$(get_opt "@marmonitor-attention-key" "a")
-jump_key=$(get_opt "@marmonitor-jump-key" "j")
 dock_key=$(get_opt "@marmonitor-dock-key" "m")
 direct_jump=$(get_opt "@marmonitor-direct-jump" "on")
 status_interval=$(get_opt "@marmonitor-interval" "2")
@@ -114,10 +113,6 @@ check_key_conflict() {
 check_key_conflict "$attention_key" prefix
 tmux bind-key "$attention_key" display-popup -E -w 120 -h 42 "sh -lc '$MARMONITOR_CMD attention --interactive --limit 12'"
 
-# Jump popup (prefix + key)
-check_key_conflict "$jump_key" prefix
-tmux bind-key "$jump_key" display-popup -E -w 120 -h 42 "sh -lc '$MARMONITOR_CMD jump --attention'"
-
 # Dock toggle (prefix + key)
 check_key_conflict "$dock_key" prefix
 tmux bind-key "$dock_key" run-shell "$CURRENT_DIR/scripts/toggle-dock.sh \"$MARMONITOR_CMD\""
@@ -126,7 +121,7 @@ tmux bind-key "$dock_key" run-shell "$CURRENT_DIR/scripts/toggle-dock.sh \"$MARM
 if [ "$direct_jump" = "on" ]; then
   for i in 1 2 3 4 5; do
     check_key_conflict "M-$i" root
-    tmux bind-key -n "M-$i" run-shell -b "sh -lc '$MARMONITOR_CMD jump --attention-index $i >/dev/null 2>&1'"
+    tmux bind-key -n "M-$i" run-shell -b "sh -lc '$MARMONITOR_CMD attention --attention-index $i >/dev/null 2>&1'"
   done
 
   # Jump-back (Option+6)
