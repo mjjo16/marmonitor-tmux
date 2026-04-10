@@ -88,6 +88,12 @@ fi
 # Set refresh interval
 tmux set -g status-interval "$status_interval"
 
+# Instant statusline refresh on pane/window/session switch
+# Daemon snapshot is already in memory so this is ~1ms cache read, negligible overhead
+tmux set-hook -g after-select-pane   "refresh-client -S"
+tmux set-hook -g after-select-window "refresh-client -S"
+tmux set-hook -g after-switch-client "refresh-client -S"
+
 # Click attention pills / jump-back in statusline
 tmux unbind-key -n MouseDown1Status 2>/dev/null || true
 tmux bind-key -n MouseDown1Status run-shell -b "sh -lc '$MARMONITOR_CMD status-click \"#{mouse_status_range}\" --client-tty \"#{client_tty}\" >/dev/null 2>&1'"
