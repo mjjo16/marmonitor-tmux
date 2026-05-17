@@ -51,6 +51,7 @@ fi
 format=$(get_opt "@marmonitor-format" "tmux-badges")
 status_line=$(get_opt "@marmonitor-status-line" "1")
 attention_key=$(get_opt "@marmonitor-attention-key" "a")
+copy_turn_key=$(get_opt "@marmonitor-copy-turn-key" "y")
 dock_key=$(get_opt "@marmonitor-dock-key" "m")
 direct_jump=$(get_opt "@marmonitor-direct-jump" "on")
 status_interval=$(get_opt "@marmonitor-interval" "2")
@@ -118,6 +119,13 @@ check_key_conflict() {
 # Attention popup (prefix + key)
 check_key_conflict "$attention_key" prefix
 tmux bind-key "$attention_key" display-popup -E -w 120 -h 42 "sh -lc '$MARMONITOR_CMD attention --interactive --limit 12'"
+
+# Copy latest assistant turn (prefix + key)
+# Passes the active pane's pid directly so marmonitor maps the right AI session
+# even when the binding fires from a context where tmux display-message would
+# return a different pane.
+check_key_conflict "$copy_turn_key" prefix
+tmux bind-key "$copy_turn_key" run-shell "$CURRENT_DIR/scripts/copy-latest-turn.sh \"$MARMONITOR_CMD\" \"#{pane_pid}\""
 
 # Dock toggle (prefix + key)
 check_key_conflict "$dock_key" prefix
