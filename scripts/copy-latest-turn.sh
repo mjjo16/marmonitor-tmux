@@ -22,15 +22,18 @@ if [ -z "$PANE_PID" ]; then
   exit 0
 fi
 
-# Parse MARMONITOR_CMD as a shell command line so quoted paths survive:
+# Interpret MARMONITOR_CMD as a shell command line so quoted paths survive:
 #   set -g @marmonitor-command 'node "/Users/me/path with spaces/marmonitor.js"'
-# `read -ra` performs only word splitting and would break the above; the
-# `eval set --` form honours real shell quoting and assigns the resulting
-# argv to "$@". This trusts the tmux option value as user-owned config
-# (same trust level as e.g. .tmux.conf binding strings).
+# `read -ra` performs only word splitting and would break the above. `eval set --`
+# runs the full shell-quote/expansion pass before assigning argv to "$@", which
+# means shell metacharacters in MARMONITOR_CMD ARE evaluated. This is the same
+# trust level as a binding line in .tmux.conf — the tmux option is user-owned
+# config, not untrusted input. If you ever need to accept the value from an
+# untrusted source, replace this with a literal argv array via tmux options.
 eval "set -- $MARMONITOR_CMD"
 
-# Exec marmonitor with argv-safe positional args. PANE_PID is fully quoted.
+# Exec marmonitor. PANE_PID is fully quoted so it stays a single argv element
+# regardless of its value; the marmonitor argv came from the trusted eval above.
 output=$("$@" copy-latest-turn --pane-pid "$PANE_PID" 2>&1)
 first_line=$(printf '%s' "$output" | head -n 1)
 
