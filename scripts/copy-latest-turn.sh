@@ -22,15 +22,16 @@ if [ -z "$PANE_PID" ]; then
   exit 0
 fi
 
-# Split MARMONITOR_CMD into argv so users can set @marmonitor-command to a
-# multi-token value like "node /path/to/marmonitor.js" without it being
-# concatenated into a fragile single shell string. `read -ra` (bash 3.2+)
-# is safer than eval here — it performs word splitting only, no metacharacter
-# evaluation.
-read -ra MARM_ARGV <<<"$MARMONITOR_CMD"
+# Parse MARMONITOR_CMD as a shell command line so quoted paths survive:
+#   set -g @marmonitor-command 'node "/Users/me/path with spaces/marmonitor.js"'
+# `read -ra` performs only word splitting and would break the above; the
+# `eval set --` form honours real shell quoting and assigns the resulting
+# argv to "$@". This trusts the tmux option value as user-owned config
+# (same trust level as e.g. .tmux.conf binding strings).
+eval "set -- $MARMONITOR_CMD"
 
 # Exec marmonitor with argv-safe positional args. PANE_PID is fully quoted.
-output=$("${MARM_ARGV[@]}" copy-latest-turn --pane-pid "$PANE_PID" 2>&1)
+output=$("$@" copy-latest-turn --pane-pid "$PANE_PID" 2>&1)
 first_line=$(printf '%s' "$output" | head -n 1)
 
 if [ -z "$first_line" ]; then
