@@ -32,6 +32,7 @@ tmux run-shell ~/.tmux/plugins/marmonitor-tmux/marmonitor.tmux
 - `status-format[1]` with `tmux-badges`
 - `prefix + a` attention popup
 - `prefix + j` jump popup
+- `prefix + y` copy latest assistant turn from the active AI pane (Claude / Codex / Gemini)
 - `prefix + m` dock toggle
 - `Option+1..5` direct jump
 
@@ -48,6 +49,7 @@ set -g @marmonitor-format 'tmux-badges'
 set -g @marmonitor-status-line '1'
 set -g @marmonitor-attention-key 'a'
 set -g @marmonitor-jump-key 'j'
+set -g @marmonitor-copy-turn-key 'y'
 set -g @marmonitor-dock-key 'm'
 set -g @marmonitor-direct-jump 'on'
 set -g @marmonitor-interval '5'
